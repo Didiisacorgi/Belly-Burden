@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Overeating Visual – Stomach & Organ Pressure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+      padding: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 1.7rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .layout {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 16px 18px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .controls h2,
+    .visual h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .controls-sub {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-bottom: 14px;
+    }
+
+    .food-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .food-btn {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.12), transparent);
+      padding: 8px 10px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: transform 0.07s ease, box-shadow 0.07s ease, border-color 0.07s ease, background 0.07s ease;
+    }
+
+    .food-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.8);
+      border-color: #38bdf8;
+    }
+
+    .food-name {
+      font-weight: 600;
+    }
+
+    .food-meta {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .food-density {
+      font-size: 0.65rem;
+      color: #a5b4fc;
+    }
+
+    .slider-row {
+      margin-top: 10px;
+      font-size: 0.8rem;
+    }
+
+    .slider-row label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      color: #cbd5f5;
+    }
+
+    .slider-row input[type="range"] {
+      width: 100%;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.07s ease, box-shadow 0.07s ease, background 0.1s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #84cc16);
+      color: #022c22;
+      box-shadow: 0 10px 18px rgba(22, 163, 74, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px rgba(21, 128, 61, 0.55);
+    }
+
+    .btn-secondary {
+      background: rgba(30, 64, 175, 0.7);
+      color: #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.9);
+    }
+
+    .mini-note {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      line-height: 1.4;
+    }
+
+    /* Visual side */
+    .visual-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .body-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.22), rgba(15, 23, 42, 0.95));
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 10px;
+    }
+
+    .body-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .label-chip {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(6px);
+    }
+
+    .label-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .pressure-panel {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .status-block {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.8);
+      font-size: 0.78rem;
+    }
+
+    .status-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .bar-shell {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e, #f97316, #ef4444);
+      transition: width 0.2s ease, filter 0.2s ease;
+    }
+
+    .status-text {
+      margin-top: 4px;
+      color: #e5e7eb;
+    }
+
+    .status-text small {
+      display: block;
+      color: #9ca3af;
+      margin-top: 2px;
+      font-size: 0.7rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      color: #c4b5fd;
+    }
+
+    .warning-text {
+      color: #fb7185;
+      font-weight: 500;
+    }
+
+    .safe-text {
+      color: #4ade80;
+      font-weight: 500;
+    }
+
+    .stomach-base {
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  fill 0.25s ease;
+      transform-origin: center;
+    }
+
+    .organ-shift {
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-origin: center;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>What Happens When You Overeat?</h1>
+    <p>Watch how the stomach expands and starts squeezing nearby organs as more food enters.</p>
+  </header>
+
+  <main class="layout">
+    <!-- Controls -->
+    <section class="controls card">
+      <h2>1. Choose food & portions</h2>
+      <p class="controls-sub">
+        Add different foods to the “stomach” and see how space and pressure change.
+      </p>
+
+      <div class="food-list">
+        <button class="food-btn" data-food="veggies">
+          <span class="food-name">🥦 Vegetables</span>
+          <span class="food-meta">Low calorie, high volume</span>
+          <span class="food-density">Takes more space, gentle impact</span>
+        </button>
+        <button class="food-btn" data-food="rice">
+          <span class="food-name">🍚 Rice / Pasta</span>
+          <span class="food-meta">Staple carbs</span>
+          <span class="food-density">Moderate density</span>
+        </button>
+        <button class="food-btn" data-food="fastfood">
+          <span class="food-name">🍔 Fast food combo</span>
+          <span class="food-meta">High fat, high energy</span>
+          <span class="food-density">Small size, big “load”</span>
+        </button>
+        <button class="food-btn" data-food="soda">
+          <span class="food-name">🥤 Sugary drinks</span>
+          <span class="food-meta">Liquid + gas</span>
+          <span class="food-density">Expands with gas & sugar</span>
+        </button>
+      </div>
+
+      <div class="slider-row">
+        <label>
+          Portion size
+          <span><span id="portionLabel">1.0</span> × standard</span>
+        </label>
+        <input id="portionSlider" type="range" min="0.5" max="3" step="0.5" value="1">
+      </div>
+
+      <div class="btn-row">
+        <button id="btnAdd" class="btn btn-primary">
+          ➕ Add to stomach
+        </button>
+        <button id="btnReset" class="btn btn-secondary" type="button">
+          🔄 Reset
+        </button>
+      </div>
+
+      <div class="mini-note">
+        This is a simple visual simulation, not a precise medical model.  
+        The goal is to help you <strong>see</strong> why stopping at comfortable
+        fullness gives your organs more room to breathe.
+      </div>
+    </section>
+
+    <!-- Visual -->
+    <section class="visual card">
+      <div class="visual-main">
+        <h2>2. See how your stomach pushes other organs</h2>
+
+        <div class="body-wrapper">
+          <!-- labels -->
+          <div class="label-chip" style="top: 16%; left: 62%;">
+            <span class="label-dot" style="background:#38bdf8;"></span>
+            Lungs
+          </div>
+          <div class="label-chip" style="top: 36%; left: 65%;">
+            <span class="label-dot" style="background:#f97316;"></span>
+            Stomach
+          </div>
+          <div class="label-chip" style="top: 60%; left: 64%;">
+            <span class="label-dot" style="background:#a855f7;"></span>
+            Intestines
+          </div>
+
+          <!-- simplified torso with organs -->
+          <svg class="body-svg" viewBox="0 0 300 230">
+            <!-- torso outline -->
+            <rect x="90" y="10" width="120" height="210" rx="60"
+                  fill="rgba(15,23,42,0.8)" stroke="#9ca3af"
+                  stroke-width="1.5" />
+
+            <!-- diaphragm -->
+            <rect x="105" y="60" width="90" height="6" rx="3"
+                  fill="rgba(148,163,184,0.7)" />
+
+            <!-- lungs -->
+            <g id="lungs" class="organ-shift">
+              <ellipse cx="135" cy="50" rx="23" ry="28"
+                       fill="#1d4ed8" fill-opacity="0.55" />
+              <ellipse cx="165" cy="50" rx="23" ry="28"
+                       fill="#1d4ed8" fill-opacity="0.55" />
+            </g>
+
+            <!-- liver (right side) -->
+            <g id="liver" class="organ-shift">
+              <path d="M 150 70 C 185 70 205 85 205 100 C 185 104 170 108 145 106 C 140 95 140 80 150 70 Z"
+                    fill="#ea580c" fill-opacity="0.65" />
+            </g>
+
+            <!-- intestines -->
+            <g id="intestines" class="organ-shift">
+              <rect x="110" y="120" width="80" height="60" rx="18"
+                    fill="#6366f1" fill-opacity="0.25" />
+              <rect x="115" y="126" width="70" height="18" rx="9"
+                    fill="#a855f7" fill-opacity="0.35" />
+              <rect x="115" y="148" width="70" height="18" rx="9"
+                    fill="#a855f7" fill-opacity="0.35" />
+              <rect x="115" y="170" width="70" height="18" rx="9"
+                    fill="#a855f7" fill-opacity="0.35" />
+            </g>
+
+            <!-- stomach -->
+            <g id="stomachGroup" class="stomach-base">
+              <!-- base shape -->
+              <path id="stomachShape"
+                    d="M 150 80
+                       C 130 80 118 92 118 110
+                       C 118 128 132 140 148 142
+                       C 162 144 178 140 188 130
+                       C 196 122 198 112 196 103
+                       C 188 100 184 95 180 88
+                       C 174 82 164 80 150 80 Z"
+                    fill="#22c55e" fill-opacity="0.85" />
+            </g>
+
+            <!-- spine (just a subtle line) -->
+            <line x1="150" y1="20" x2="150" y2="210"
+                  stroke="rgba(148,163,184,0.3)" stroke-width="1" stroke-dasharray="2 4" />
+          </svg>
+        </div>
+
+        <!-- status panels -->
+        <div class="pressure-panel">
+          <div class="status-block">
+            <div class="status-title">Stomach fill & pressure</div>
+            <div class="bar-shell">
+              <div id="pressureBar" class="bar-fill"></div>
+            </div>
+            <div class="status-text" id="pressureStatus">
+              Comfortable: your stomach still has room to expand naturally.
+              <small>Below ~70% full: breathing is easy and nearby organs are relaxed.</small>
+            </div>
+          </div>
+
+          <div class="status-block">
+            <div class="status-title">Nearby organs affected</div>
+            <div id="organStatusText" class="status-text">
+              <span class="safe-text">Minimal displacement.</span>  
+              Lungs, liver and intestines have enough space.
+              <div class="pill-row">
+                <span class="pill">Breathing comfortable</span>
+                <span class="pill">Diaphragm relaxed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // --- Data model ---
+  const foods = {
+    veggies: {
+      name: "Vegetables",
+      // relative volume impact
+      volume: 0.10,
+      // relatively low "load" for same volume
+      densityFactor: 0.6
+    },
+    rice: {
+      name: "Rice / Pasta",
+      volume: 0.15,
+      densityFactor: 1.0
+    },
+    fastfood: {
+      name: "Fast food combo",
+      volume: 0.22,
+      densityFactor: 1.4
+    },
+    soda: {
+      name: "Sugary drinks",
+      volume: 0.18,
+      densityFactor: 1.2
+    }
+  };
+
+  let selectedFoodKey = "veggies";
+  let fillLevel = 0; // 0 = empty, 1 = comfortably full, >1 = overeating
+
+  // --- DOM elements ---
+  const foodButtons = document.querySelectorAll(".food-btn");
+  const portionSlider = document.getElementById("portionSlider");
+  const portionLabel = document.getElementById("portionLabel");
+  const btnAdd = document.getElementById("btnAdd");
+  const btnReset = document.getElementById("btnReset");
+
+  const stomachGroup = document.getElementById("stomachGroup");
+  const stomachShape = document.getElementById("stomachShape");
+  const lungs = document.getElementById("lungs");
+  const liver = document.getElementById("liver");
+  const intestines = document.getElementById("intestines");
+
+  const pressureBar = document.getElementById("pressureBar");
+  const pressureStatus = document.getElementById("pressureStatus");
+  const organStatusText = document.getElementById("organStatusText");
+
+  // --- helpers ---
+  function setSelectedFood(key) {
+    selectedFoodKey = key;
+    foodButtons.forEach(btn => {
+      if (btn.dataset.food === key) {
+        btn.style.borderColor = "#22c55e";
+        btn.style.background = "radial-gradient(circle at top left, rgba(34,197,94,0.28), rgba(15,23,42,0.9))";
+      } else {
+        btn.style.borderColor = "rgba(148,163,184,0.4)";
+        btn.style.background = "radial-gradient(circle at top left, rgba(248,250,252,0.12), transparent)";
+      }
+    });
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function updateVisuals() {
+    const normalized = clamp(fillLevel, 0, 1.8); // 1.8 = very overfull
+
+    // Stomach scale: from 0 (0.6) -> 1.8 (1.9)
+    const minScale = 0.6;
+    const maxScale = 1.9;
+    const scale = minScale + (maxScale - minScale) * (normalized / 1.8);
+    stomachGroup.style.transform = `scale(${scale}) translate(10px, 10px)`;
+
+    // Stomach color: green -> orange -> red
+    let stomachColor;
+    if (normalized < 0.7) {
+      stomachColor = "#22c55e"; // comfy green
+    } else if (normalized < 1.1) {
+      stomachColor = "#f97316"; // warning orange
+    } else {
+      stomachColor = "#ef4444"; // overfull red
+    }
+    stomachShape.setAttribute("fill", stomachColor);
+
+    // Organ displacement based on normalized fill (subtle first, then obvious)
+    const lungShift = 0 - 11 * (normalized / 1.8); // move up
+    const liverShift = 0 + 12 * (normalized / 1.8); // move right
+    const intestineShift = 0 + 16 * (normalized / 1.8); // move down
+
+    lungs.style.transform = `translate(0, ${lungShift})`;
+    liver.style.transform = `translate(${liverShift}, ${2 * (normalized / 1.8)})`;
+    intestines.style.transform = `translate(0, ${intestineShift})`;
+
+    // Pressure bar
+    const pressurePercent = clamp(normalized / 1.8 * 100, 2, 100);
+    pressureBar.style.width = `${pressurePercent}%`;
+
+    // Slight glow if very full
+    if (normalized > 1.1) {
+      pressureBar.style.filter = "drop-shadow(0 0 6px rgba(248,113,113,0.8))";
+    } else if (normalized > 0.7) {
+      pressureBar.style.filter = "drop-shadow(0 0 4px rgba(249,115,22,0.7))";
+    } else {
+      pressureBar.style.filter = "none";
+    }
+
+    // Text states
+    if (normalized < 0.7) {
+      pressureStatus.innerHTML =
+        'Comfortable: your stomach still has room to expand naturally.' +
+        '<small>Below ~70% full: breathing is easy and nearby organs are relaxed.</small>';
+      organStatusText.innerHTML =
+        '<span class="safe-text">Minimal displacement.</span> Lungs, liver and intestines have enough space.' +
+        '<div class="pill-row">' +
+        '<span class="pill">Breathing comfortable</span>' +
+        '<span class="pill">Diaphragm relaxed</span>' +
+        '</div>';
+    } else if (normalized < 1.1) {
+      pressureStatus.innerHTML =
+        'Getting tight: your stomach is stretching close to its comfortable limit.' +
+        '<small>You may start to feel pressure, bloating or a “too full” sensation.</small>';
+      organStatusText.innerHTML =
+        '<span class="warning-text">Organs are being pushed.</span> The stomach presses upward on the diaphragm and lungs, downward on the intestines.' +
+        '<div class="pill-row">' +
+        '<span class="pill">Shallower breathing</span>' +
+        '<span class="pill">Bloating / heaviness</span>' +
+        '</div>';
+    } else {
+      pressureStatus.innerHTML =
+        'Overfull: your stomach is over-stretched and crowding other organs.' +
+        '<small>This is when lying down, chest tightness or reflux after overeating are more likely.</small>';
+      organStatusText.innerHTML =
+        '<span class="warning-text">Significant organ compression.</span> The stomach pushes the diaphragm up, lungs have less space, and intestines are squeezed.' +
+        '<div class="pill-row">' +
+        '<span class="pill">Chest pressure</span>' +
+        '<span class="pill">Hard to breathe deeply</span>' +
+        '<span class="pill">Heartburn / reflux</span>' +
+        '</div>';
+    }
+  }
+
+  function addFoodToStomach() {
+    const food = foods[selectedFoodKey];
+    const portion = parseFloat(portionSlider.value);
+
+    // Combine portion, volume and density in a simple way
+    const delta = food.volume * portion * food.densityFactor;
+    fillLevel += delta;
+
+    // cap to avoid ridiculous numbers
+    fillLevel = clamp(fillLevel, 0, 2.2);
+    updateVisuals();
+  }
+
+  function resetSimulation() {
+    fillLevel = 0;
+    updateVisuals();
+  }
+
+  // --- Event bindings ---
+  foodButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      setSelectedFood(btn.dataset.food);
+    });
+  });
+
+  portionSlider.addEventListener("input", () => {
+    portionLabel.textContent = portionSlider.value;
+  });
+
+  btnAdd.addEventListener("click", (e) => {
+    e.preventDefault();
+    addFoodToStomach();
+  });
+
+  btnReset.addEventListener("click", (e) => {
+    e.preventDefault();
+    resetSimulation();
+  });
+
+  // init
+  setSelectedFood(selectedFoodKey);
+  updateVisuals();
+</script>
+</body>
+</html>
